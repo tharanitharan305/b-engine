@@ -1,22 +1,16 @@
-/**
- * index.js
- * HTML + CSS → Book Page Model Compiler
- * FLOW + ABSOLUTE aware (FINAL)
- */
+
 
 const express = require("express")
 const cors = require("cors");
 const { parse } = require("node-html-parser");
 const css = require("css");
-const {htmll,csss} = require('./inputParser.js')
-
+const {htmll,csss} = require('./inputParser.js');
+const savejson = require("./savejson.js");
+const getOutput = require("./getOutput.js");
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* ======================================================
-   CSS PARSER
-====================================================== */
 
 function parseCSS(cssText) {
   const ast = css.parse(cssText);
@@ -42,9 +36,7 @@ function parseCSS(cssText) {
   return map;
 }
 
-/* ======================================================
-   NORMALIZERS
-====================================================== */
+
 
 function normalizeNumber(val) {
   if (val == null) return null;
@@ -100,9 +92,7 @@ function extractTranslate(transform = "") {
   };
 }
 
-/* ======================================================
-   FLOW vs ABSOLUTE DETECTION  🔥 CORE FIX
-====================================================== */
+
 
 function isAbsolute(style = {}) {
   return (
@@ -116,10 +106,6 @@ function isAbsolute(style = {}) {
   );
 }
 
-/* ======================================================
-   LAYOUT HELPERS
-====================================================== */
-
 function resolveLayout(style = {}) {
   if (style.display === "flex") {
     return style["flex-direction"] === "column" ? "column" : "row";
@@ -127,9 +113,7 @@ function resolveLayout(style = {}) {
   return "column";
 }
 
-/* ======================================================
-   NODE → ELEMENT COMPILER
-====================================================== */
+
 
 function nodeToElement(node, cssMap) {
   if (!node.tagName) return null;
@@ -155,9 +139,7 @@ function nodeToElement(node, cssMap) {
         height: style.height,
       }
     : null;
-
-  /* ---------- TEXT ---------- */
-  if (dataType === "text" || node.tagName === "P") {
+  if (dataType === " text" || node.tagName === "P") {
     const value = node.text?.trim();
     if (!value) return null;
 
@@ -169,7 +151,6 @@ function nodeToElement(node, cssMap) {
     };
   }
 
-  /* ---------- IMAGE ---------- */
   if (dataType === "image") {
     return {
       type: "image",
@@ -178,8 +159,6 @@ function nodeToElement(node, cssMap) {
       data: { src: node.getAttribute("src") },
     };
   }
-
-  /* ---------- VIDEO ---------- */
   if (dataType === "video") {
     return {
       type: "video",
@@ -188,8 +167,6 @@ function nodeToElement(node, cssMap) {
       data: { src: node.getAttribute("src"), controls: true },
     };
   }
-
-  /* ---------- AUDIO ---------- */
   if (dataType === "audio") {
     return {
       type: "audio",
@@ -199,7 +176,6 @@ function nodeToElement(node, cssMap) {
     };
   }
 
-  /* ---------- 3D MODEL ---------- */
   if (dataType === "3d_object") {
     const model = node.querySelector("model-viewer");
     if (!model) return null;
@@ -211,8 +187,6 @@ function nodeToElement(node, cssMap) {
       data: { src: model.getAttribute("src") },
     };
   }
-
-  /* ---------- MATH ---------- */
   if (dataType === "equation") {
     const annotation = node.querySelector(
       'annotation[encoding="application/x-tex"]'
@@ -222,15 +196,6 @@ function nodeToElement(node, cssMap) {
     return {
       type: "math",
       frame,
-
-
-
-
-
-
-
-
-      
       style,
       data: {
         value: annotation.text.trim(),
@@ -239,7 +204,6 @@ function nodeToElement(node, cssMap) {
     };
   }
 
-  /* ---------- CONTAINER (FLOW) ---------- */
   const layout = resolveLayout(rawStyle);
 
   const children = node.childNodes
@@ -256,9 +220,6 @@ function nodeToElement(node, cssMap) {
   };
 }
 
-/* ======================================================
-   HTML + CSS → BOOK MODEL
-====================================================== */
 
 function buildBookModel(html, cssText) {
   const root = parse(html);
@@ -292,9 +253,6 @@ function buildBookModel(html, cssText) {
   };
 }
 
-/* ======================================================
-   API
-====================================================== */
 app.get("",(req,res)=>{
   res.status(200).json({data:"hai"});
 
@@ -307,17 +265,16 @@ app.post("/parse", (req, res) => {
     if (!htmll || !csss) {
       return res.status(400).json({ error: "html and css are required" });
     }
-
-    res.json(buildBookModel(htmll, csss));
+    const out=buildBookModel(htmll, csss);
+    savejson(out);
+    const newData=getOutput();
+    res.json(newData);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Parsing failed" });
   }
 });
 
-/* ======================================================
-   START SERVER
-====================================================== */
 
 app.listen(3000, () => {
   console.log("📘 Book compiler running at http://localhost:3000");
