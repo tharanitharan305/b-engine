@@ -38,11 +38,66 @@ function parseCSS(cssText) {
 
 
 
-function normalizeNumber(val) {
+
+function normalizeNumber(val, parentSize = null) {
   if (val == null) return null;
-  const m = val.toString().match(/-?\d+(\.\d+)?/);
-  return m ? Number(m[0]) : null;
+
+  const str = val.toString().trim();
+
+  // Percentage → resolve using parent
+  if (str.endsWith("%")) {
+    if (parentSize == null) return null;
+    const percent = parseFloat(str);
+    return (percent / 100) * parentSize;
+  }
+
+  // Pixel value
+  if (str.endsWith("px")) {
+    return parseFloat(str);
+  }
+
+  // Pure number (HTML attributes like width="320")
+  if (/^-?\d+(\.\d+)?$/.test(str)) {
+    return Number(str);
+  }
+
+  // auto / unsupported
+  return null;
 }
+
+// function parseSize(val) {
+//   if (val == null) return null;
+
+//   const str = val.toString().trim();
+
+//   if (str.endsWith("%")) {
+//     return { value: parseFloat(str), unit: "%" };
+//   }
+
+//   if (str.endsWith("px")) {
+//     return { value: parseFloat(str), unit: "px" };
+//   }
+
+//   // HTML attributes like width="320"
+//   if (/^-?\d+(\.\d+)?$/.test(str)) {
+//     return { value: Number(str), unit: "px" };
+//   }
+
+//   return null; // auto / unsupported
+// }
+// function resolveSize(size, parentSize) {
+//   if (!size) return null;
+
+//   if (size.unit === "px") {
+//     return size.value;
+//   }
+
+//   if (size.unit === "%" && parentSize != null) {
+//     return (size.value / 100) * parentSize;
+//   }
+
+//   return null;
+// }
 
 function normalizeColor(value) {
   if (!value || typeof value !== "string") return null;
@@ -122,14 +177,23 @@ function nodeToElement(node, cssMap) {
   const dataType = node.getAttribute("data-type");
   const rawStyle = (id && cssMap[id]) || {};
   const absolute = isAbsolute(rawStyle);
+const pageWidth =794;
+
+const pageHeight = 1123;
 
   const style = {
     ...rawStyle,
     color: normalizeColor(rawStyle.color),
     background: normalizeColor(rawStyle.background),
-    fontSize: normalizeNumber(rawStyle.fontSize),
-    width: normalizeNumber(rawStyle.width),
-    height: normalizeNumber(rawStyle.height),
+  fontSize: normalizeNumber(rawStyle.fontSize),
+
+  width:
+    normalizeNumber(rawStyle.width, pageWidth) ??
+    normalizeNumber(node.getAttribute("width"), pageWidth),
+
+  height:
+    normalizeNumber(rawStyle.height) ??
+    normalizeNumber(node.getAttribute("height")),
   };
 
   const frame = absolute
@@ -231,8 +295,8 @@ function buildBookModel(html, cssText) {
   const page = {
     id: "page-1",
     size: {
-      width: normalizeNumber(bodyStyle.width) || 794,
-      height: normalizeNumber(bodyStyle.height) || 1123,
+      width:794,
+      height:  1123,
     },
     background: normalizeColor(bodyStyle.background) || "#ffffff",
     layers: [
