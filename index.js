@@ -338,8 +338,42 @@ app.post("/parse", (req, res) => {
     res.status(500).json({ error: "Parsing failed" });
   }
 });
+app.get("/getbooks",(req,res)=>{
+  const data = getOutput();
+  const books = [];
 
+  function findImage(elements) {
+    for (const element of elements) {
+      if (element.type === 'image' && element.data && element.data.src) {
+        return element.data.src;
+      }
+      if (element.children) {
+        const img = findImage(element.children);
+        if (img) return img;
+      }
+    }
+    return null;
+  }
 
+  const book = data.book;
+  const title = "Book Title"; // Placeholder, as title is not defined in the data
+  const version = data.version;
+  let image = null;
+
+  for (const page of book.pages) {
+    for (const layer of page.layers) {
+      image = findImage(layer.elements);
+      if (image) break;
+    }
+    if (image) break;
+  }
+
+  if (!image) image = "https://placehold.net/300x208.png";
+
+  books.push({ title, version, image });
+
+  res.json(books);
+});
 app.listen(3000, () => {
   console.log("📘 Book compiler running at http://localhost:3000");
 });

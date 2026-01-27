@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const data = fs.readFileSync("./input.json", "utf-8");
+const data = fs.readFileSync("./inputs/input.json", "utf-8");
 const json = JSON.parse(data);
 
 const htmll = json.html || "";
