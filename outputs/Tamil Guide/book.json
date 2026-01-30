@@ -1,0 +1,86 @@
+{
+  "title": "Tamil Guide",
+  "version": "1.0",
+  "author": "B-leaners",
+  "image": "assets/images/book1.png",
+  "createdAt": "2026-01-30T04:22:12.758Z",
+  "changelog": [
+    {
+      "version": "1.0",
+      "type": "created",
+      "timestamp": "2026-01-28T10:36:34.724Z",
+      "message": "Book created",
+      "pagesChanged": []
+    },
+    {
+      "version": "1.0",
+      "type": "updated",
+      "timestamp": "2026-01-28T10:37:29.230Z",
+      "message": "Updated pages: 1",
+      "pagesChanged": [
+        1
+      ],
+      "previousVersion": "1.0"
+    },
+    {
+      "version": "1.0",
+      "type": "updated",
+      "timestamp": "2026-01-28T10:38:03.263Z",
+      "message": "Updated pages: 1",
+      "pagesChanged": [
+        1
+      ],
+      "previousVersion": "1.0"
+    },
+    {
+      "version": "1.0",
+      "type": "updated",
+      "timestamp": "2026-01-28T10:38:25.684Z",
+      "message": "Updated pages: 1",
+      "pagesChanged": [
+        1
+      ],
+      "previousVersion": "1.0"
+    },
+    {
+      "version": "1.0",
+      "type": "updated",
+      "timestamp": "2026-01-28T12:01:52.078Z",
+      "message": "Updated pages: 3",
+      "pagesChanged": [
+        3
+      ],
+      "previousVersion": "1.0"
+    },
+    {
+      "version": "1.0",
+      "type": "updated",
+      "timestamp": "2026-01-28T12:25:54.582Z",
+      "message": "Updated pages: 1",
+      "pagesChanged": [
+        1
+      ],
+      "previousVersion": "1.0"
+    },
+    {
+      "version": "1.0",
+      "type": "updated",
+      "timestamp": "2026-01-28T12:27:16.352Z",
+      "message": "Updated pages: 1",
+      "pagesChanged": [
+        1
+      ],
+      "previousVersion": "1.0"
+    },
+    {
+      "version": "1.0",
+      "type": "updated",
+      "timestamp": "2026-01-30T04:22:12.758Z",
+      "message": "Updated pages: 1",
+      "pagesChanged": [
+        1
+      ],
+      "previousVersion": "1.0"
+    }
+  ]
+}

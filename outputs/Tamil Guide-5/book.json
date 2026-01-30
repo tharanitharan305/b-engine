@@ -1,0 +1,26 @@
+{
+  "title": "Tamil Guide-5",
+  "version": "1.1",
+  "author": "B-leaners",
+  "image": "assets/images/book1.png",
+  "createdAt": "2026-01-30T04:23:14.642Z",
+  "changelog": [
+    {
+      "version": "1.1",
+      "type": "created",
+      "timestamp": "2026-01-30T04:22:25.467Z",
+      "message": "Book created",
+      "pagesChanged": []
+    },
+    {
+      "version": "1.1",
+      "type": "updated",
+      "timestamp": "2026-01-30T04:23:14.643Z",
+      "message": "Updated pages: 1",
+      "pagesChanged": [
+        1
+      ],
+      "previousVersion": "1.1"
+    }
+  ]
+}

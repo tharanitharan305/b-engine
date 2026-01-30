@@ -1,0 +1,62 @@
+{
+  "page": 3,
+  "filename": "3.json",
+  "id": "page-1",
+  "size": {
+    "width": 794,
+    "height": 1123
+  },
+  "background": "#ffffff",
+  "layers": [
+    {
+      "name": "content",
+      "elements": [
+        {
+          "type": "text",
+          "frame": null,
+          "style": {
+            "fontSize": 16,
+            "color": "#000000",
+            "padding": "10px",
+            "minHeight": "30px",
+            "width": null,
+            "background": null,
+            "height": null
+          },
+          "data": {
+            "value": "Edit text"
+          }
+        },
+        {
+          "type": "image",
+          "frame": null,
+          "style": {
+            "color": null,
+            "background": null,
+            "fontSize": null,
+            "width": null,
+            "height": null
+          },
+          "data": {
+            "src": "https://picsum.photos/300"
+          }
+        },
+        {
+          "type": "video",
+          "frame": null,
+          "style": {
+            "width": 350,
+            "height": 350,
+            "color": null,
+            "background": null,
+            "fontSize": null
+          },
+          "data": {
+            "src": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "controls": true
+          }
+        }
+      ]
+    }
+  ]
+}
