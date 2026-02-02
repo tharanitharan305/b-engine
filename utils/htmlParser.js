@@ -115,6 +115,19 @@ function resolveLayout(style = {}) {
 }
 
 function nodeToElement(node, cssMap) {
+  if (node.nodeType === 3) {
+    const value = node.text?.trim();
+    if (!value) return null; // Skip empty whitespace
+    return {
+      type: "text",
+      style: {
+         // Inherit generic text styles or defaults here if needed
+         fontSize: 14, 
+         color: "#000000" 
+      }, 
+      data: { value },
+    };
+  }
   if (!node.tagName) return null;
 
   const id = node.getAttribute("id");
@@ -126,7 +139,7 @@ function nodeToElement(node, cssMap) {
 
   const style = {
     ...rawStyle,
-    color: normalizeColor(rawStyle.color),
+    color: normalizeColor(rawStyle.color)??"#000000",
     background: normalizeColor(rawStyle.background),
     fontSize: normalizeNumber(rawStyle.fontSize),
     width:
@@ -144,13 +157,15 @@ function nodeToElement(node, cssMap) {
         height: style.height,
       }
     : null;
-
+ console.log("tag name is ",node.tagName,"and the value is ",node.text);
   if (dataType === " text" || node.tagName === "P") {
     const value = node.text?.trim();
     if (!value) return null;
-    // console.log(id)
-    //     console.log(style);
-
+    console.log("tag name is ",node.tagName,"and the value is ",value);
+        if(node.tagName==="B"){
+          console.log("bold text found");
+          style.fontWeight="bold";
+        }
     return {
       type: "text",
       frame,
@@ -214,7 +229,11 @@ function nodeToElement(node, cssMap) {
       },
     };
   }
-
+  if(dataType==="table"){
+    console.log("parsing table");
+    const {parseTable}=require("./table_render");
+    return parseTable(node,cssMap);
+  } 
   const layout = resolveLayout(rawStyle);
 
   const children = node.childNodes
@@ -251,7 +270,7 @@ function buildBookModel(html, cssText) {
         elements: body.childNodes
           .map((n)=>{
 const el=nodeToElement(n, cssMap);
-console.log(el);
+// console.log(el);
 return el;
           })
           .filter(Boolean),

@@ -7,6 +7,9 @@ const getOutput = require("./fs/getOutput.js");
 const { buildBookModel, buildBookModelFromJSON } = require("./utils/htmlParser.js");
 const { handleinputParser } = require("./parser/inputParser.js");
 const { streamToResponse } = require("./utils/downloadFiles");
+const saveInput = require("./fs/saveInput.js");
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 
 const app = express();
 app.use(cors());
@@ -43,6 +46,29 @@ const data = handleinputParser(bookTitle);
     res.json(processedBook);
 
 })
+
+// Save an input JSON file (multipart/form-data with field 'file')
+app.post('/savebook', upload.single('file'), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'Missing file upload (field name: file)' });
+
+    const content = req.file.buffer.toString('utf-8');
+    let inputJson;
+    try {
+      inputJson = JSON.parse(content);
+    } catch (err) {
+      return res.status(400).json({ error: 'Uploaded file is not valid JSON' });
+    }
+
+    if (!inputJson || !inputJson.title) return res.status(400).json({ error: 'JSON missing title' });
+
+    const result = saveInput(inputJson);
+    res.status(200).json({ status: 'ok', result });
+  } catch (err) {
+    console.error('Error in /savebook:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.get("/getBook/:title",(req,res)=>{
   const bookTitle=req.params.title;
