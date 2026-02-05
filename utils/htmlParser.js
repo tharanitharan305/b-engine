@@ -115,19 +115,19 @@ function resolveLayout(style = {}) {
 }
 
 function nodeToElement(node, cssMap) {
-  // if (node.nodeType === 3) {
-  //   const value = node.text?.trim();
-  //   if (!value) return null; 
-  //   return {
-  //     type: "text",
-  //     style: {
+  if (node.nodeType === 3) {
+    const value = node.text?.trim();
+    if (!value) return null; 
+    return {
+      type: "text",
+      style: {
         
-  //        fontSize: 14, 
-  //        color: "#000000" 
-  //     }, 
-  //     data: { value },
-  //   };
-  // }
+         fontSize: 14, 
+         color: "#000000" 
+      }, 
+      data: { value },
+    };
+  }
   if (!node.tagName) return null;
 
   const id = node.getAttribute("id");
@@ -159,12 +159,7 @@ function nodeToElement(node, cssMap) {
     : null;
 
 console.log("parsing node with tag:",node.tagName," and data-type:",dataType);  
-// =====================
-// SIMPLE SPL PARSER
-// =====================
-// =====================
-// FINAL SPL PARSER
-// =====================
+
 if (dataType === "spl") {
   console.log("parsing SPL");
 
@@ -184,7 +179,7 @@ if (dataType === "spl") {
       li.text
         ?.replace(/\s+/g, " ")
         .trim()
-    );
+    ) ;
 
   return {
     type: "spl",
@@ -253,14 +248,14 @@ if (dataType === "qa") {
   }
 
   if (dataType === "3d_object") {
-    const model = node.querySelector("model-viewer");
-    if (!model) return null;
+    // const model = node.querySelector("model-viewer");
+    // if (!model) return null;
 
     return {
       type: "model3d",
       frame,
       style,
-      data: { src: model.getAttribute("src") },
+      data: { src: "https://apidev.cloud/image/view/1770297630598-element_003_lithium.glb"},
     };
   }
 
