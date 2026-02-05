@@ -47,7 +47,7 @@ const data = handleinputParser(bookTitle);
 
 })
 
-// Save an input JSON file (multipart/form-data with field 'file')
+
 app.post('/savebook', upload.single('file'), (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Missing file upload (field name: file)' });
@@ -75,12 +75,11 @@ app.get("/getBook/:title",(req,res)=>{
   const outputDir=path.join(__dirname,"outputs",bookTitle);
   
   try {
-    // Read book.json from outputs directory
+   
     const bookJsonPath = path.join(outputDir, "book.json");
     const bookJsonContent = fs.readFileSync(bookJsonPath, "utf-8");
     const bookMetadata = JSON.parse(bookJsonContent);
-    
-    // Get all JSON files except book.json and sort them numerically
+ 
     const files = fs.readdirSync(outputDir);
     const pageFiles = files
       .filter(file => file.endsWith(".json") && file !== "book.json")
@@ -89,15 +88,14 @@ app.get("/getBook/:title",(req,res)=>{
         const numB = parseInt(b);
         return numA - numB;
       });
-    
-    // Read and combine all page files
+
     const pages = pageFiles.map((file) => {
       const filePath = path.join(outputDir, file);
       const pageContent = fs.readFileSync(filePath, "utf-8");
       return JSON.parse(pageContent);
     });
     
-    // Combine book metadata with all pages
+
     const combinedOutput = {
       ...bookMetadata,
       pages: pages
@@ -163,13 +161,13 @@ app.get('/download_file', async (req, res) => {
   if (!fileUrl) return res.status(400).json({ error: 'missing url' });
 
   const decoded = decodeURIComponent(fileUrl);
-    // basic validation
+
     const parsed = new URL(decoded);
     if (!['http:', 'https:'].includes(parsed.protocol)) {
       return res.status(400).json({ error: 'invalid protocol' });
     }                   
 
-    // Stream remote file to client
+
     await streamToResponse(decoded, res);
   } catch (err) {
     console.error('download_file error', err.message);

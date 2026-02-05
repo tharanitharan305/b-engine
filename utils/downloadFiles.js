@@ -10,7 +10,6 @@ const streamPipeline = promisify(pipeline);
 
 function parseFilenameFromContentDisposition(header) {
   if (!header) return null;
-  // simple parse: look for filename="..." or filename=...
   const match = header.match(/filename\*=UTF-8''([^;\n\r]+)/i) || header.match(/filename="?([^";\n\r]+)"?/i);
   if (match) return decodeURIComponent(match[1].trim());
   return null;
@@ -18,7 +17,6 @@ function parseFilenameFromContentDisposition(header) {
 
 function guessExtensionFromContentType(contentType) {
   if (!contentType) return '';
-  // extremely small mapping for common types
   const map = {
     'audio/mpeg': '.mp3',
     'video/mp4': '.mp4',
@@ -41,11 +39,10 @@ async function fetchResponse(url, maxRedirects = 5) {
 
   return new Promise((resolve, reject) => {
     const req = lib.get(urlObj, (res) => {
-      // follow redirects
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        // follow relative redirects
+
         const next = new URL(res.headers.location, urlObj).toString();
-        res.resume(); // discard
+        res.resume(); 
         fetchResponse(next, maxRedirects - 1).then(resolve).catch(reject);
         return;
       }
@@ -71,7 +68,7 @@ async function downloadToFile(url, destDir = os.tmpdir(), options = {}) {
   const { onProgress } = options;
   const { res, url: finalUrl } = await fetchResponse(url);
 
-  // Decide filename
+
   let filename = parseFilenameFromContentDisposition(res.headers['content-disposition']);
   if (!filename) {
     const parsed = new URL(finalUrl);
@@ -80,7 +77,7 @@ async function downloadToFile(url, destDir = os.tmpdir(), options = {}) {
   }
 
   if (!filename) {
-    // fallback to timestamp + guessed extension
+
     const ext = guessExtensionFromContentType(res.headers['content-type']);
     filename = `download-${Date.now()}${ext}`;
   }
@@ -94,7 +91,7 @@ async function downloadToFile(url, destDir = os.tmpdir(), options = {}) {
   res.on('data', (chunk) => {
     transferred += chunk.length;
     if (typeof onProgress === 'function') {
-      try { onProgress(transferred, total); } catch (e) { /* ignore progress errors */ }
+      try { onProgress(transferred, total); } catch (e) {}
     }
   });
 
@@ -135,15 +132,13 @@ async function download(url, { to = 'file', destDir, onProgress } = {}) {
   return { path: outPath };
 }
 
-// Stream a remote URL directly into an Express response (preserves important headers)
 async function streamToResponse(url, expressRes) {
   const { res, url: finalUrl } = await fetchResponse(url);
 
-  // Forward some useful headers
+
   if (res.headers['content-type']) expressRes.setHeader('Content-Type', res.headers['content-type']);
   if (res.headers['content-length']) expressRes.setHeader('Content-Length', res.headers['content-length']);
 
-  // Determine filename
   let filename = parseFilenameFromContentDisposition(res.headers['content-disposition']);
   if (!filename) {
     const parsed = new URL(finalUrl);
@@ -158,7 +153,7 @@ async function streamToResponse(url, expressRes) {
     expressRes.setHeader('Content-Disposition', `attachment; filename="download-${Date.now()}${ext}"`);
   }
 
-  // Pipe remote response to client
+
   res.on('error', (err) => expressRes.destroy(err));
   expressRes.on('close', () => { try { res.destroy(); } catch (e) {} });
   res.pipe(expressRes);

@@ -1,4 +1,0 @@
-{
-  "html": "<body id=\"i80i\"><div data-type=\" text\" id=\"ibm4\">Edit text</div><img src=\"https://picsum.photos/300\" data-type=\"image\"/><video allowfullscreen=\"allowfullscreen\" src=\"https://www.w3schools.com/html/mov_bbb.mp4\" controls data-type=\"video\" id=\"i9pg\"></video></body>",
-  "css": "* { box-sizing: border-box; } body {margin: 0;}#i80i{width:794px;height:1123px;minWidth:794px;maxWidth:794px;minHeight:1123px;maxHeight:1123px;position:relative;margin:0 auto;border:1px solid #080808;boxShadow:0 0 10px rgba(0,0,0,0.1);background:white;overflow:hidden;}#ibm4{fontSize:16px;color:#000;padding:10px;minHeight:30px;width:auto;}#i9pg{width:350px;height:350px;}"
-}

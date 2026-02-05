@@ -115,19 +115,19 @@ function resolveLayout(style = {}) {
 }
 
 function nodeToElement(node, cssMap) {
-  if (node.nodeType === 3) {
-    const value = node.text?.trim();
-    if (!value) return null; // Skip empty whitespace
-    return {
-      type: "text",
-      style: {
-         // Inherit generic text styles or defaults here if needed
-         fontSize: 14, 
-         color: "#000000" 
-      }, 
-      data: { value },
-    };
-  }
+  // if (node.nodeType === 3) {
+  //   const value = node.text?.trim();
+  //   if (!value) return null; 
+  //   return {
+  //     type: "text",
+  //     style: {
+        
+  //        fontSize: 14, 
+  //        color: "#000000" 
+  //     }, 
+  //     data: { value },
+  //   };
+  // }
   if (!node.tagName) return null;
 
   const id = node.getAttribute("id");
@@ -157,11 +157,61 @@ function nodeToElement(node, cssMap) {
         height: style.height,
       }
     : null;
- console.log("tag name is ",node.tagName,"and the value is ",node.text);
+
+console.log("parsing node with tag:",node.tagName," and data-type:",dataType);  
+// =====================
+// SIMPLE SPL PARSER
+// =====================
+// =====================
+// FINAL SPL PARSER
+// =====================
+if (dataType === "spl") {
+  console.log("parsing SPL");
+
+  // ---- title ----
+  const titleNode = node.querySelector(
+    ':scope > [data-type="Text"]'
+  );
+
+  const title = titleNode?.text
+    ?.replace(/\s+/g, " ")
+    .trim() ?? "";
+
+  // ---- points ----
+  const points = node
+    .querySelectorAll('li[data-type="Text"]')
+    .map(li =>
+      li.text
+        ?.replace(/\s+/g, " ")
+        .trim()
+    );
+
+  return {
+    type: "spl",
+    frame,
+    style,
+    data: {
+      title,
+      points,
+    },
+    children: [],
+  };
+}
+
+
+
+
+
+
+if (dataType === "qa") {
+  const { parseQA } = require("./qa_parser");
+  return parseQA(node, cssMap, style);
+}
+
   if (dataType === " text" || node.tagName === "P") {
     const value = node.text?.trim();
     if (!value) return null;
-    console.log("tag name is ",node.tagName,"and the value is ",value);
+   //console.log("tag name is",node.tagName,"and the value is ",value);
         if(node.tagName==="B"){
           console.log("bold text found");
           style.fontWeight="bold";
@@ -175,6 +225,7 @@ function nodeToElement(node, cssMap) {
   }
 
   if (dataType === "image") {
+    console.log("parsing image");
     return {
       type: "image",
       frame,
@@ -213,27 +264,44 @@ function nodeToElement(node, cssMap) {
     };
   }
 
-  if (dataType === "equation") {
-    const annotation = node.querySelector(
-      'annotation[encoding="application/x-tex"]'
-    );
-    if (!annotation) return null;
+if (dataType === "equation") {
+  console.log("parsing equation");
 
-    return {
-      type: "math",
-      frame,
-      style,
-      data: {
-        value: annotation.text.trim(),
-        format: "latex",
-      },
-    };
-  }
+  // 1️⃣ Try MathML annotation first
+  const annotation = node.querySelector(
+    'annotation[encoding="application/x-tex"]'
+  );
+
+  // 2️⃣ Fallback: raw latex text inside span/div
+  const rawLatex =
+    annotation?.text ||
+    node.text?.trim();
+
+  if (!rawLatex) return null;
+
+  return {
+    type: "math",
+    frame,
+    style,
+    data: {
+      value: rawLatex.replace(/\s+/g, " "),
+      format: "latex",
+    },
+  };
+}
+
   if(dataType==="table"){
     console.log("parsing table");
     const {parseTable}=require("./table_render");
     return parseTable(node,cssMap);
   } 
+  if(node.tagName==="HR"){
+    return {
+      type: "divider",
+      style,
+      data: {},
+    };
+  }
   const layout = resolveLayout(rawStyle);
 
   const children = node.childNodes
