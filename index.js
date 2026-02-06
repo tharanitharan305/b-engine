@@ -10,7 +10,9 @@ const { streamToResponse } = require("./utils/downloadFiles");
 const saveInput = require("./fs/saveInput.js");
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
-
+const https = require('https');
+const http = require('http');
+const { log } = require("console");
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -152,10 +154,11 @@ app.get("/getbooks", (req, res) => {
     res.status(500).json({ error: err.message || "Failed to fetch books" });
   }
 });
-app.get('/download_file', async (req, res) => {
+app.post('/download_file', async (req, res) => {
 
   try {
-      console.log("Received download_file request");
+      console.log("Received download_file request",req.body.url);
+      
   const fileUrl = req.body.url;
   console.log("Download request for URL:", fileUrl);
   if (!fileUrl) return res.status(400).json({ error: 'missing url' });
@@ -178,6 +181,46 @@ app.get('/download_file', async (req, res) => {
     }
   }
 });
+
+app.get('/video', async (req, res) => {
+  try {
+    log("Received video proxy request", req.query.url);
+    const videoUrl = decodeURIComponent(req.query.url);
+    if (!videoUrl) return res.status(400).send('Missing URL');
+
+    const lib = videoUrl.startsWith('https') ? https : http;
+
+const options = {
+  headers: {
+    Range: req.headers.range || 'bytes=0-',
+    'User-Agent': 'Mozilla/5.0',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+  },
+};
+
+
+    const proxyReq = lib.get(videoUrl, options, (proxyRes) => {
+      // 🔥 Forward ALL important headers
+      res.writeHead(proxyRes.statusCode, {
+        ...proxyRes.headers,
+        'Access-Control-Allow-Origin': '*',
+      });
+
+      proxyRes.pipe(res);
+    });
+
+    proxyReq.on('error', (err) => {
+      console.error(err);
+      res.status(500).send('Video proxy error');
+    });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Server error');
+  }
+});
+
 app.listen(3000, () => {
   console.log("📘 Book compiler running at http://localhost:3000");
 });
