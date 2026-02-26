@@ -30,6 +30,4 @@ function parseTable(tableNode, cssMap) {
     rows,
   };
 }
-module.exports = {
-  parseTable,
-};
+export { parseTable };

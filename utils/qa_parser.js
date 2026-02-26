@@ -124,4 +124,4 @@ function hasRadioInputs(node) {
   return (node.querySelectorAll("input[type='radio']") || []).length > 0;
 }
 
-module.exports = { parseQA };
+export { parseQA };

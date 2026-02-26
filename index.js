@@ -2,23 +2,16 @@ import express from "express";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
-
-import savejson from "./fs/savejson.js";
-import getOutput from "./fs/getOutput.js";
-import { buildBookModel, buildBookModelFromJSON } from "./utils/htmlParser.js";
-import { handleinputParser } from "./parser/inputParser.js";
-import { streamToResponse } from "./utils/downloadFiles.js";
-import saveInput from "./fs/saveInput.js";
-
+import * as fsUtils from "./fs/index.js";
+import * as utils from "./utils/index.js";
+import * as parser from "./parser/index.js";
 import multer from "multer";
-const upload = multer({ storage: multer.memoryStorage() });
-
 import https from "https";
 import http from "http";
-
 import { log } from "console";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+const upload = multer({ storage: multer.memoryStorage() });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
@@ -36,9 +29,9 @@ app.post("/parse", (req, res) => {
     if (!htmll || !csss) {
       return res.status(400).json({ error: "html and css are required" });
     }
-    const out = buildBookModel(htmll, csss);
-    savejson(out);
-    const newData = getOutput();
+    const out = utils.buildBookModel(htmll, csss);
+    fsUtils.saveJson(out);
+    const newData = fsUtils.getOutput();
     res.json(newData);
   } catch (err) {
     console.error(err);
@@ -48,11 +41,11 @@ app.post("/parse", (req, res) => {
 app.get("/getbookin/:title", (req, res) => {
  const bookTitle = req.params.title;
  console.log("Fetching book:", bookTitle);
-const data = handleinputParser(bookTitle);
+const data = parser.handleinputParser(bookTitle);
 // console.log("Fetched data:", data);
-   const processedBook = buildBookModelFromJSON(data);
+   const processedBook = parser.buildBookModelFromJSON(data);
   //  console.log("Processed book:", processedBook);
-    savejson(processedBook);
+   fsUtils.saveJson(processedBook);
     res.json(processedBook);
 
 })
@@ -72,7 +65,7 @@ app.post('/savebook', upload.single('file'), (req, res) => {
 
     if (!inputJson || !inputJson.title) return res.status(400).json({ error: 'JSON missing title' });
 
-    const result = saveInput(inputJson);
+    const result = fsUtils.saveInput(inputJson);
     res.status(200).json({ status: 'ok', result });
   } catch (err) {
     console.error('Error in /savebook:', err.message);
@@ -179,7 +172,7 @@ app.post('/download_file', async (req, res) => {
     }                   
 
 
-    await streamToResponse(decoded, res);
+    await utils.streamToResponse(decoded, res);
   } catch (err) {
     console.error('download_file error', err.message);
     if (!res.headersSent) {

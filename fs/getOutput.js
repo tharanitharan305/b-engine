@@ -31,4 +31,4 @@ function getOutput() {
   }
 }
 
-export default getOutput;
+export { getOutput };

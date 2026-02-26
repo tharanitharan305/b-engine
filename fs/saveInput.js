@@ -7,7 +7,7 @@ import { join } from 'path';
  * - Writes each page file using the page `name` (e.g. "1.json") with { name, html, css }
  * - Writes a `book.json` with basic metadata and empty changelog
  */
-export default function saveInput(inputJson) {
+export function saveInput(inputJson) {
   try {
     if (!inputJson || !inputJson.title) {
       throw new Error('Invalid input: missing title');

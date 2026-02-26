@@ -1,6 +1,6 @@
 import fs from "fs";
 import  path from "path";
-import { buildBookModel } from "../utils/htmlParser.js";
+import * as parserUtils from "../parser/index.js";
 
 function processBookDirectory(bookDirPath) {
   try {
@@ -20,7 +20,7 @@ function processBookDirectory(bookDirPath) {
       const filePath = path.join(bookDirPath, file);
       const pageContent = fs.readFileSync(filePath, "utf-8");
       const pageData = JSON.parse(pageContent);
-      const bookModel = buildBookModel(pageData.html, pageData.css);
+      const bookModel = parserUtils.buildBookModel(pageData.html, pageData.css);
 
       return {
         page: index + 1,
