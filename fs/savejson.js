@@ -1,7 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-
-module.exports = function saveJson(json) {
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { join } from "path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+export default function saveJson(json) {
   try {
 
     const bookTitle = json.title || "Untitled";
@@ -9,27 +12,27 @@ module.exports = function saveJson(json) {
     const image = json.image || "";
     const currentVersion = json.version || "1.0";
     const pages = json.pages || [];
-    const booksDir = path.join(__dirname, "../outputs");
-    const bookDir = path.join(booksDir, bookTitle);
+    const booksDir = join(__dirname, "../outputs");
+    const bookDir = join(booksDir, bookTitle);
 
-    if (!fs.existsSync(booksDir)) {
-      fs.mkdirSync(booksDir, { recursive: true });
+    if (!existsSync(booksDir)) {
+      mkdirSync(booksDir, { recursive: true });
     }
 
     let isNewBook = false;
     let previousVersion = null;
     let changelog = [];
-    if (!fs.existsSync(bookDir)) {
-      fs.mkdirSync(bookDir, { recursive: true });
+    if (!existsSync(bookDir)) {
+      mkdirSync(bookDir, { recursive: true });
       isNewBook = true;
       console.log(`📖 Created new book directory: ${bookTitle}`);
     } else {
       console.log(`📖 Book directory exists: ${bookTitle}`);
       
-      const existingBookJsonPath = path.join(bookDir, "book.json");
-      if (fs.existsSync(existingBookJsonPath)) {
+      const existingBookJsonPath = join(bookDir, "book.json");
+      if (existsSync(existingBookJsonPath)) {
         try {
-          const existingBook = JSON.parse(fs.readFileSync(existingBookJsonPath, "utf-8"));
+          const existingBook = JSON.parse(readFileSync(existingBookJsonPath, "utf-8"));
           previousVersion = existingBook.version;
           changelog = existingBook.changelog || [];
         } catch (e) {
@@ -42,11 +45,11 @@ module.exports = function saveJson(json) {
     if (!isNewBook && pages.length > 0) {
       pages.forEach((page) => {
         const pageFileName = `${page.page}.json`;
-        const pageFilePath = path.join(bookDir, pageFileName);
+        const pageFilePath = join(bookDir, pageFileName);
 
-        if (fs.existsSync(pageFilePath)) {
+        if (existsSync(pageFilePath)) {
           try {
-            const existingPage = JSON.parse(fs.readFileSync(pageFilePath, "utf-8"));
+            const existingPage = JSON.parse(readFileSync(pageFilePath, "utf-8"));
             const pageString = JSON.stringify(page);
             const existingString = JSON.stringify(existingPage);
 
@@ -93,14 +96,14 @@ module.exports = function saveJson(json) {
     bookMetadata.changelog = changelog;
 
 
-    const bookJsonPath = path.join(bookDir, "book.json");
-    fs.writeFileSync(bookJsonPath, JSON.stringify(bookMetadata, null, 2));
+    const bookJsonPath = join(bookDir, "book.json");
+    writeFileSync(bookJsonPath, JSON.stringify(bookMetadata, null, 2));
     console.log(`✅ Saved: ${bookJsonPath}`);
 
     if (pages.length > 0) {
       pages.forEach((page) => {
         const pageFileName = `${page.page}.json`;
-        const pageFilePath = path.join(bookDir, pageFileName);
+        const pageFilePath = join(bookDir, pageFileName);
         const pageData = {
           page: page.page,
           filename: page.filename,
@@ -110,7 +113,7 @@ module.exports = function saveJson(json) {
           layers: page.layers,
         };
 
-        fs.writeFileSync(pageFilePath, JSON.stringify(pageData, null, 2));
+        writeFileSync(pageFilePath, JSON.stringify(pageData, null, 2));
         console.log(`✅ Saved: ${pageFilePath}`);
       });
     }

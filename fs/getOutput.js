@@ -1,20 +1,20 @@
-const fs = require("fs");
-const path = require("path");
+import { readdirSync, statSync, readFileSync } from "fs";
+import { join } from "path";
 
 function getOutput() {
   const outputDir = "./outputs";
   const allOutputs = {};
 
   try {
-    const files = fs.readdirSync(outputDir);
+    const files = readdirSync(outputDir);
 
     files.forEach((file) => {
-      const filePath = path.join(outputDir, file);
-      const stat = fs.statSync(filePath);
+      const filePath = join(outputDir, file);
+      const stat = statSync(filePath);
 
       // Only process files, not directories
       if (stat.isFile() && (file.endsWith(".json") || file.endsWith(".txt"))) {
-        const data = fs.readFileSync(filePath, "utf-8");
+        const data = readFileSync(filePath, "utf-8");
         try {
           allOutputs[file] = JSON.parse(data);
         } catch (e) {
@@ -31,4 +31,4 @@ function getOutput() {
   }
 }
 
-module.exports = getOutput;
+export default getOutput;

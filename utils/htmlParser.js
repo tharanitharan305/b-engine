@@ -1,5 +1,5 @@
-const { parse } = require("node-html-parser");
-const css = require("css");
+import { parse } from "node-html-parser";
+import css from "css";
 
 function parseCSS(cssText) {
   const ast = css.parse(cssText);
@@ -375,7 +375,7 @@ function buildBookModelFromJSON(bookJSON) {
   };
 }
 
-module.exports = {
+export {
   parseCSS,
   normalizeNumber,
   normalizeColor,

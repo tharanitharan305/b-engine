@@ -1,7 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-const { processBookDirectory } = require("../utils/bookProcessor.js");
-
+import fs from "fs";
+import path from "path";
+import { processBookDirectory } from "../utils/bookProcessor.js";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const handleinputParser = (bookTitle) => {
   try {
     const inputDir = path.join(__dirname, "../inputs", bookTitle);
@@ -17,5 +20,4 @@ const handleinputParser = (bookTitle) => {
     throw error;
   }
 };
-
-module.exports = { handleinputParser };
+export{ handleinputParser };

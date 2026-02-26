@@ -1,11 +1,12 @@
-﻿const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const http = require('http');
-const https = require('https');
-const { URL } = require('url');
-const { promisify } = require('util');
-const { pipeline } = require('stream');
+﻿import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import http from 'http';
+import https from 'https';
+import { URL } from 'url';
+import { promisify } from 'util';
+import { pipeline } from 'stream';
+
 const streamPipeline = promisify(pipeline);
 
 function parseFilenameFromContentDisposition(header) {
@@ -159,7 +160,7 @@ async function streamToResponse(url, expressRes) {
   res.pipe(expressRes);
 }
 
-module.exports = {
+export{
   downloadToFile,
   downloadToBuffer,
   download,

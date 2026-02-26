@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 /**
  * Save an input JSON (with pages as an object) to outputs/<title>/
@@ -7,7 +7,7 @@ const path = require('path');
  * - Writes each page file using the page `name` (e.g. "1.json") with { name, html, css }
  * - Writes a `book.json` with basic metadata and empty changelog
  */
-module.exports = function saveInput(inputJson) {
+export default function saveInput(inputJson) {
   try {
     if (!inputJson || !inputJson.title) {
       throw new Error('Invalid input: missing title');
@@ -17,11 +17,11 @@ module.exports = function saveInput(inputJson) {
     // sanitize folder name by replacing path separators and trimming
     const title = String(titleRaw).replace(/[\\/:*?"<>|]/g, '').trim() || 'Untitled';
 
-    const booksDir = path.join(__dirname, '..', 'inputs');
-    const bookDir = path.join(booksDir, title);
+    const booksDir = join(__dirname, '..', 'inputs');
+    const bookDir = join(booksDir, title);
 
-    if (!fs.existsSync(booksDir)) fs.mkdirSync(booksDir, { recursive: true });
-    if (!fs.existsSync(bookDir)) fs.mkdirSync(bookDir, { recursive: true });
+    if (!existsSync(booksDir)) mkdirSync(booksDir, { recursive: true });
+    if (!existsSync(bookDir)) mkdirSync(bookDir, { recursive: true });
 
     const pagesObj = inputJson.pages || {};
     const pageKeys = Object.keys(pagesObj);
@@ -30,7 +30,7 @@ module.exports = function saveInput(inputJson) {
     pageKeys.forEach((key) => {
       const page = pagesObj[key];
       const fileName = page.name || `${key}.json`;
-      const filePath = path.join(bookDir, fileName);
+      const filePath = join(bookDir, fileName);
 
       const pageData = {
         name: page.name,
@@ -38,7 +38,7 @@ module.exports = function saveInput(inputJson) {
         css: page.css,
       };
 
-      fs.writeFileSync(filePath, JSON.stringify(pageData, null, 2), 'utf-8');
+      writeFileSync(filePath, JSON.stringify(pageData, null, 2), 'utf-8');
       console.log(`✅ Saved page: ${filePath}`);
     });
 
@@ -52,8 +52,8 @@ module.exports = function saveInput(inputJson) {
       changelog: [],
     };
 
-    const bookJsonPath = path.join(bookDir, 'book.json');
-    fs.writeFileSync(bookJsonPath, JSON.stringify(bookMeta, null, 2), 'utf-8');
+    const bookJsonPath = join(bookDir, 'book.json');
+    writeFileSync(bookJsonPath, JSON.stringify(bookMeta, null, 2), 'utf-8');
     console.log(`✅ Saved book metadata: ${bookJsonPath}`);
 
     return { status: 'ok', title, pages: pageKeys.length };

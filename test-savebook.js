@@ -1,6 +1,6 @@
-const saveInput = require('./fs/saveInput');
-const path = require('path');
-const fs = require('fs');
+import saveInput from './fs/saveInput.js';
+import path from 'path';
+import fs from 'fs';
 
 const sample = {
   "title": "Tamil Guide-5",

@@ -1,24 +1,32 @@
-const express = require("express")
-const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
-const savejson = require("./fs/savejson.js");
-const getOutput = require("./fs/getOutput.js");
-const { buildBookModel, buildBookModelFromJSON } = require("./utils/htmlParser.js");
-const { handleinputParser } = require("./parser/inputParser.js");
-const { streamToResponse } = require("./utils/downloadFiles");
-const saveInput = require("./fs/saveInput.js");
-const multer = require("multer");
+import express from "express";
+import cors from "cors";
+import fs from "fs";
+import path from "path";
+
+import savejson from "./fs/savejson.js";
+import getOutput from "./fs/getOutput.js";
+import { buildBookModel, buildBookModelFromJSON } from "./utils/htmlParser.js";
+import { handleinputParser } from "./parser/inputParser.js";
+import { streamToResponse } from "./utils/downloadFiles.js";
+import saveInput from "./fs/saveInput.js";
+
+import multer from "multer";
 const upload = multer({ storage: multer.memoryStorage() });
-const https = require('https');
-const http = require('http');
-const { log } = require("console");
+
+import https from "https";
+import http from "http";
+
+import { log } from "console";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.get("", (req, res) => {
-  res.status(200).json({ data: "hai" });
+  res.status(200).json({ version: "0.1" });
 });
 
 app.post("/parse", (req, res) => {
@@ -222,5 +230,5 @@ const options = {
 });
 
 app.listen(3000, () => {
-  console.log("📘 Book compiler running at http://localhost:3000");
+  console.log("📘 Book compiler v-0.1 running at http://localhost:3000 ");
 });

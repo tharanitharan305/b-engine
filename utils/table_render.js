@@ -1,4 +1,4 @@
-const {nodeToElement} =require("./htmlParser.js");
+import {nodeToElement} from "./htmlParser.js";
 function parseTable(tableNode, cssMap) {
   const rows = [];
 

@@ -1,6 +1,6 @@
-const fs = require("fs");
-const path = require("path");
-const { buildBookModel } = require("../utils/htmlParser.js");
+import fs from "fs";
+import  path from "path";
+import { buildBookModel } from "../utils/htmlParser.js";
 
 function processBookDirectory(bookDirPath) {
   try {
@@ -44,4 +44,4 @@ function processBookDirectory(bookDirPath) {
   }
 }
 
-module.exports = { processBookDirectory };
+export { processBookDirectory };
